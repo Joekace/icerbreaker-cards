@@ -41,32 +41,136 @@
         button:hover {
             background: #0056b3;
         }
+        select, input {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .players-list {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 16px;
+            background: #e6f7ff;
+            padding: 10px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Icebreaker Cards</h1>
-        <div class="question-box" id="question">Click below to get a question!</div>
+        <input type="text" id="player-name" placeholder="Enter your name">
+        <button onclick="registerPlayer()">Register</button>
+        <div class="players-list" id="players-list"><strong>Registered Players:</strong><br></div>
+        <select id="category">
+            <option value="fun">Fun</option>
+            <option value="deep">Deep</option>
+            <option value="silly">Silly</option>
+        </select>
+        <div class="question-box" id="question">Select a category and click below to get a question!</div>
         <button onclick="getQuestion()">New Question</button>
+        <button onclick="startSpeedRound()">Start Speed Round</button>
+        <div id="timer" style="font-size: 18px; margin-top: 10px;"></div>
+        <div id="player-turn" style="font-size: 18px; margin-top: 10px;"></div>
+        <div id="scoreboard" style="font-size: 18px; margin-top: 10px;"></div>
     </div>
     
     <script>
-        const questions = [
-            "What’s the most unusual job you’ve ever had?",
-            "If you could have dinner with any celebrity, who would it be?",
-            "What’s a fun fact about you that most people don’t know?",
-            "What’s your biggest dream in life?",
-            "If you could instantly master a new skill, what would it be?",
-            "What’s the best trip you’ve ever taken?",
-            "If you won the lottery today, what’s the first thing you’d buy?",
-            "What’s a childhood memory that makes you smile?",
-            "If you had to describe yourself in three words, what would they be?",
-            "What’s a hobby you’ve always wanted to try?"
-        ];
+        const questions = {
+            fun: [
+                "What’s the best trip you’ve ever taken?",
+                "If you won the lottery today, what’s the first thing you’d buy?",
+                "What’s a childhood memory that makes you smile?",
+                "What’s a hobby you’ve always wanted to try?"
+            ],
+            deep: [
+                "What’s your biggest dream in life?",
+                "If you could instantly master a new skill, what would it be?",
+                "If you had to describe yourself in three words, what would they be?",
+                "What’s one thing you regret not doing?"
+            ],
+            silly: [
+                "If you were a superhero, what would your superpower be?",
+                "What’s the weirdest food combination you love?",
+                "If you could swap lives with an animal for a day, which one would it be?",
+                "What’s the funniest thing you’ve ever done by accident?"
+            ]
+        };
+
+        let players = [];
+        let scores = {};
+        let currentPlayer = 0;
+        let timerInterval;
+        let speedRoundActive = false;
+        let questionCount = 0;
+        
+        function registerPlayer() {
+            const playerName = document.getElementById("player-name").value.trim();
+            if (playerName && !players.includes(playerName)) {
+                players.push(playerName);
+                scores[playerName] = 0;
+                document.getElementById("player-name").value = "";
+                updatePlayersList();
+                alert(`${playerName} has joined the game!`);
+                if (players.length === 1) {
+                    document.getElementById("player-turn").innerText = `Current turn: ${players[0]}`;
+                }
+            }
+        }
+
+        function updatePlayersList() {
+            document.getElementById("players-list").innerHTML = `<strong>Registered Players:</strong><br>` + players.join("<br>");
+        }
 
         function getQuestion() {
-            const randomIndex = Math.floor(Math.random() * questions.length);
-            document.getElementById("question").innerText = questions[randomIndex];
+            if (players.length === 0) {
+                alert("Please register at least one player first!");
+                return;
+            }
+            const category = document.getElementById("category").value;
+            const randomIndex = Math.floor(Math.random() * questions[category].length);
+            document.getElementById("question").innerText = questions[category][randomIndex];
+            if (speedRoundActive) {
+                scores[players[currentPlayer]]++;
+                updateScoreboard();
+            }
+        }
+
+        function startSpeedRound() {
+            if (players.length === 0) {
+                alert("Please register at least one player first!");
+                return;
+            }
+            let timeLeft = 10;
+            speedRoundActive = true;
+            questionCount = 0;
+            document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("timer").innerText = "Speed Round Over! Next player!";
+                    speedRoundActive = false;
+                    nextPlayer();
+                }
+            }, 1000);
+        }
+
+        function updateScoreboard() {
+            let scoreText = "<strong>Scoreboard:</strong><br>";
+            players.forEach(player => {
+                scoreText += `${player}: ${scores[player]}<br>`;
+            });
+            document.getElementById("scoreboard").innerHTML = scoreText;
+        }
+
+        function nextPlayer() {
+            if (players.length > 0) {
+                currentPlayer = (currentPlayer + 1) % players.length;
+                document.getElementById("player-turn").innerText = `Current turn: ${players[currentPlayer]}`;
+            }
         }
     </script>
 </body>
