@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icebreaker Cards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 24px;
+        }
+        .question-box {
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #ffebcc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Icebreaker Cards</h1>
+        <div class="question-box" id="question">Click below to get a question!</div>
+        <button onclick="getQuestion()">New Question</button>
+    </div>
+    
+    <script>
+        const questions = [
+            "What’s the most unusual job you’ve ever had?",
+            "If you could have dinner with any celebrity, who would it be?",
+            "What’s a fun fact about you that most people don’t know?",
+            "What’s your biggest dream in life?",
+            "If you could instantly master a new skill, what would it be?",
+            "What’s the best trip you’ve ever taken?",
+            "If you won the lottery today, what’s the first thing you’d buy?",
+            "What’s a childhood memory that makes you smile?",
+            "If you had to describe yourself in three words, what would they be?",
+            "What’s a hobby you’ve always wanted to try?"
+        ];
+
+        function getQuestion() {
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            document.getElementById("question").innerText = questions[randomIndex];
+        }
+    </script>
+</body>
+</html>
